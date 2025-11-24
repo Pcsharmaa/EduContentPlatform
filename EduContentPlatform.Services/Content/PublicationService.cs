@@ -1,4 +1,5 @@
 ﻿using EduContentPlatform.Models.Content.EduContentPlatform.Models.Publications;
+using EduContentPlatform.Services.Notification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,12 @@ namespace EduContentPlatform.Repository.Content
     public class PublicationService : IPublicationService
     {
         private readonly IPublicationRepository _publicationRepository;
-       // private readonly INotificationService _notifier;
+        private readonly IEmailService _emailService;
 
-        public PublicationService(IPublicationRepository publicationRepository)
-            //INotificationService notifier = null)
+        public PublicationService(IPublicationRepository publicationRepository,IEmailService emailService)
         {
             _publicationRepository = publicationRepository;
-            //_notifier = notifier;
+            _emailService = emailService;
         }
 
         public async Task<int> SubmitPublicationAsync(PublicationModel model)

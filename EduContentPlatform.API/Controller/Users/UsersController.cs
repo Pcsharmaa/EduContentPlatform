@@ -27,6 +27,7 @@ namespace EduContentPlatform.API.Controllers
 
         [HttpGet("admin-only")]
         [AuthorizeAdmin]
+
         public IActionResult AdminOnly()
         {
             return Ok(new { success = true, message = "This is only accessible by Admin" });
