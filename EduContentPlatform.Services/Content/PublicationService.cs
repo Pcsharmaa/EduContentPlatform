@@ -1,4 +1,6 @@
-﻿using EduContentPlatform.Models.Content.EduContentPlatform.Models.Publications;
+﻿using EduContentPlatform.Models.Content;
+using EduContentPlatform.Models.Content.EduContentPlatform.Models.Publications;
+using EduContentPlatform.Models.Teacher;
 using EduContentPlatform.Services.Notification;
 using System;
 using System.Collections.Generic;
@@ -10,54 +12,17 @@ namespace EduContentPlatform.Repository.Content
 {
     public class PublicationService : IPublicationService
     {
-        private readonly IPublicationRepository _publicationRepository;
-        private readonly IEmailService _emailService;
+        private readonly IPublicationRepository _repo;
+        public PublicationService(IPublicationRepository repo) => _repo = repo;
 
-        public PublicationService(IPublicationRepository publicationRepository,IEmailService emailService)
-        {
-            _publicationRepository = publicationRepository;
-            _emailService = emailService;
-        }
-
-        public async Task<int> SubmitPublicationAsync(PublicationModel model)
-        {
-            var id = await _publicationRepository.UploadPublicationAsync(model);
-            // notify publishers/editors if necessary
-            return id;
-        }
-
-        public async Task<int> SubmitVolumeAsync(PublicationVolumeModel model)
-        {
-            var id = await _publicationRepository.UploadVolumeAsync(model);
-            // if video volume, you can enqueue video worker job here
-            return id;
-        }
-
-        public async Task<int> SubmitArticleAsync(ArticleModel model)
-        {
-            var id = await _publicationRepository.UploadArticleAsync(model);
-            return id;
-        }
-
-        public async Task UpdateStatusAsync(string itemType, int itemId, string status, int performedBy, string comments = null)
-        {
-            await _publicationRepository.UpdatePublishingStatusAsync(itemType, itemId, status, performedBy, comments);
-            // optionally notify relevant users
-        }
-
-        public async Task AssignToEditorAsync(string itemType, int itemId, int editorUserId)
-        {
-            await _publicationRepository.AssignToEditorAsync(itemType, itemId, editorUserId);
-            // notify editor
-        }
-
-        public async Task<IEnumerable<PublicationModel>> GetPendingForRoleAsync(string roleName)
-            => await _publicationRepository.GetPendingForRoleAsync(roleName);
-
-        public async Task<PublicationModel> GetPublicationAsync(int publicationId)
-            => await _publicationRepository.GetPublicationAsync(publicationId);
-
-        public async Task<IEnumerable<PublicationVolumeModel>> GetVolumesAsync(int publicationId)
-            => await _publicationRepository.GetVolumesAsync(publicationId);
+        public Task<int> SubmitPublicationAsync(PublicationModel model) => _repo.UploadPublicationAsync(model);
+        public Task<int> SubmitVolumeAsync(PublicationVolumeModel model) => _repo.UploadVolumeAsync(model);
+        public Task<int> SubmitArticleAsync(ArticleModel model) => _repo.UploadArticleAsync(model);
+        public Task<int> SubmitResearchPaperAsync(ResearchPaperModel model) => _repo.UploadResearchPaperAsync(model);
+        public Task AssignToEditorAsync(string itemType, int itemId, int editorUserId) => _repo.AssignToEditorAsync(itemType, itemId, editorUserId);
+        public Task UpdateStatusAsync(string itemType, int itemId, string status, int performedBy, string comments = null) => _repo.UpdatePublishingStatusAsync(itemType, itemId, status, performedBy, comments);
+        public Task<IEnumerable<PublicationModel>> GetPendingForRoleAsync(string roleName) => _repo.GetPendingForRoleAsync(roleName);
+        public Task<PublicationModel> GetPublicationAsync(int publicationId) => _repo.GetPublicationAsync(publicationId);
+        public Task<IEnumerable<PublicationVolumeModel>> GetVolumesAsync(int publicationId) => _repo.GetVolumesAsync(publicationId);
     }
 }

@@ -12,5 +12,4 @@ namespace EduContentPlatform.Repository.Content
         Task<bool> HasAccessAsync(int userId, string itemType, int itemId);
         Task GrantAccessAsync(int userId, string itemType, int itemId, string accessType);
     }
-
 }

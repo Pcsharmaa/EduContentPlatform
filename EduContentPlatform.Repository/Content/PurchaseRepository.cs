@@ -8,77 +8,26 @@ namespace EduContentPlatform.Repository.Content
 {
     public class PurchaseRepository : IPurchaseRepository
     {
-        private readonly ISqlConnectionFactory _sqlConnectionFactory;
-        private readonly ILogger<PurchaseRepository> _logger;
-
-        public PurchaseRepository(ISqlConnectionFactory sqlConnectionFactory, ILogger<PurchaseRepository> logger)
-        {
-            _sqlConnectionFactory = sqlConnectionFactory;
-            _logger = logger;
-        }
-
-        private void LogError(string method, Exception ex, object payload = null)
-        {
-            _logger.LogError(ex, $"[PurchaseRepository::{method}] Error occurred. Payload: {@payload}");
-        }
+        private readonly ISqlConnectionFactory _factory;
+        public PurchaseRepository(ISqlConnectionFactory factory) => _factory = factory;
 
         public async Task<int> CreatePurchaseAsync(int userId, string itemType, int itemId, decimal amount)
         {
-            try
-            {
-                using var conn = _sqlConnectionFactory.CreateConnection();
-
-                return await conn.ExecuteScalarAsync<int>(
-                    "sp_PurchaseItem",
-                    new { UserId = userId, ItemType = itemType, ItemId = itemId, Amount = amount },
-                    commandType: CommandType.StoredProcedure
-                );
-            }
-            catch (Exception ex)
-            {
-                LogError(nameof(CreatePurchaseAsync), ex, new { userId, itemType, itemId, amount });
-                throw;
-            }
+            using var conn = _factory.CreateConnection();
+            return await conn.ExecuteScalarAsync<int>("sp_PurchaseItem", new { UserId = userId, ItemType = itemType, ItemId = itemId, Amount = amount }, commandType: CommandType.StoredProcedure);
         }
 
         public async Task<bool> HasAccessAsync(int userId, string itemType, int itemId)
         {
-            try
-            {
-                using var conn = _sqlConnectionFactory.CreateConnection();
-
-                var result = await conn.ExecuteScalarAsync<int>(
-                    "sp_CheckUserAccess",
-                    new { UserId = userId, ItemType = itemType, ItemId = itemId },
-                    commandType: CommandType.StoredProcedure
-                );
-
-                return result > 0;
-            }
-            catch (Exception ex)
-            {
-                LogError(nameof(HasAccessAsync), ex, new { userId, itemType, itemId });
-                throw;
-            }
+            using var conn = _factory.CreateConnection();
+            var result = await conn.ExecuteScalarAsync<int>("sp_CheckUserAccess", new { UserId = userId, ItemType = itemType, ItemId = itemId }, commandType: CommandType.StoredProcedure);
+            return result > 0;
         }
 
         public async Task GrantAccessAsync(int userId, string itemType, int itemId, string accessType)
         {
-            try
-            {
-                using var conn = _sqlConnectionFactory.CreateConnection();
-
-                await conn.ExecuteAsync(
-                    "sp_GrantAccess",
-                    new { UserId = userId, ItemType = itemType, ItemId = itemId, AccessType = accessType },
-                    commandType: CommandType.StoredProcedure
-                );
-            }
-            catch (Exception ex)
-            {
-                LogError(nameof(GrantAccessAsync), ex, new { userId, itemType, itemId, accessType });
-                throw;
-            }
+            using var conn = _factory.CreateConnection();
+            await conn.ExecuteAsync("sp_GrantAccess", new { UserId = userId, ItemType = itemType, ItemId = itemId, AccessType = accessType }, commandType: CommandType.StoredProcedure);
         }
     }
 }
