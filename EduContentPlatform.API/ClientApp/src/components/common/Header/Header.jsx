@@ -31,10 +31,10 @@ const Header = () => {
 
         {/* Navigation Links */}
         <nav className={`header-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          <Link to="/browse" className="nav-link">
+          <Link to="/" className="nav-link">
             Browse
           </Link>
-          {isAuthenticated && (
+          {/* {isAuthenticated && (
             <>
               <Link to="/dashboard" className="nav-link">
                 Dashboard
@@ -43,7 +43,7 @@ const Header = () => {
                 Upload
               </Link>
             </>
-          )}
+          )} */}
         </nav>
 
         {/* Right Section */}
