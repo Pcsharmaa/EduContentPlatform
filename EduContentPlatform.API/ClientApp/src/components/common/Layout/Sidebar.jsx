@@ -53,13 +53,13 @@ const Sidebar = ({ role }) => {
   ];
   
   const getMenuByRole = () => {
-    switch(role || user?.role) {
-      case 'student': return studentMenu;
-      case 'teacher': return teacherMenu;
-      case 'scholar': return scholarMenu;
-      case 'editor': return editorMenu;
-      case 'reviewer': return reviewerMenu;
-      case 'admin': return adminMenu;
+    switch(role || user?.displayName) {
+      case 'Student': return studentMenu;
+      case 'Teacher': return teacherMenu;
+      case 'Scholar': return scholarMenu;
+      case 'Editor': return editorMenu;
+      case 'Reviewer': return reviewerMenu;
+      case 'Admin': return adminMenu;
       default: return [];
     }
   };
@@ -147,7 +147,7 @@ const Sidebar = ({ role }) => {
           </div>
           <div className="user-details">
             <h4>{user?.name || 'User'}</h4>
-            <p className="user-role">{role || user?.role}</p>
+            <p className="user-role">{role || user?.displayName}</p>
           </div>
         </div>
       </div>

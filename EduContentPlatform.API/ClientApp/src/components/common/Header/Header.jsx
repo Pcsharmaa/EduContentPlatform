@@ -72,7 +72,7 @@ const Header = () => {
                   <div className="user-menu-header">
                     <p className="user-email">{user?.email}</p>
                     <p className="user-role">
-                      {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'User'}
+                      {user?.displayName?.charAt(0).toUpperCase() + user?.displayName?.slice(1) || 'User'}
                     </p>
                   </div>
 
@@ -88,14 +88,14 @@ const Header = () => {
                     Settings
                   </Link>
 
-                  {user?.role === 'admin' && (
+                  {user?.displayName === 'Admin' && (
                     <Link to="/admin" className="menu-item" onClick={() => setIsUserMenuOpen(false)}>
                       <span className="menu-icon">👑</span>
                       Admin Panel
                     </Link>
                   )}
 
-                  {['editor', 'reviewer'].includes(user?.role) && (
+                  {['Editor', 'Reviewer'].includes(user?.displayName) && (
                     <Link to="/editorial" className="menu-item" onClick={() => setIsUserMenuOpen(false)}>
                       <span className="menu-icon">✏️</span>
                       Editorial
@@ -135,10 +135,8 @@ const Header = () => {
           </button>
         </div>
       </div>
-        {/* Dev impersonation widget - only visible in development */}
-        <div style={{ marginLeft: 12 }}>
-          <DevImpersonate />
-        </div>
+       
+     
     </header>
   );
 };

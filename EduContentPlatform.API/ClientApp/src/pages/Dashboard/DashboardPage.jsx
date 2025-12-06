@@ -95,12 +95,12 @@ const DashboardPage = () => {
           <Button variant="secondary" to="/dashboard/content" size="lg">
             📄 View My Content
           </Button>
-          {user?.role === 'admin' && (
+          {user?.displayName === 'Admin' && (
             <Button variant="secondary" to="/admin" size="lg">
               👑 Admin Panel
             </Button>
           )}
-          {['editor', 'reviewer'].includes(user?.role) && (
+          {['Editor', 'Reviewer'].includes(user?.displayName) && (
             <Button variant="secondary" to="/editorial" size="lg">
               ✏️ Editorial Dashboard
             </Button>

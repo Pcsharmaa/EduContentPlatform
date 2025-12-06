@@ -1,23 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import BaseCard from '../../content/ContentCard/BaseCard';
 
 const DocumentCard = ({ document }) => {
   const {
     id,
     title,
     description,
-    type,
+    type = 'pdf',
     author,
     pages,
     fileSize,
-    downloads,
+    downloads = 0,
     uploadDate,
     price,
     thumbnail,
   } = document;
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (!bytes) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -25,70 +25,67 @@ const DocumentCard = ({ document }) => {
   };
 
   const getFileIcon = (fileType) => {
-    switch (fileType) {
-      case 'pdf':
-        return '📄';
-      case 'doc':
-      case 'docx':
-        return '📝';
-      case 'ppt':
-      case 'pptx':
-        return '📊';
-      default:
-        return '📁';
-    }
+    const typeMap = {
+      pdf: '📄',
+      doc: '📝',
+      docx: '📝',
+      ppt: '📊',
+      pptx: '📊',
+      txt: '📃',
+      xls: '📈',
+      xlsx: '📈',
+    };
+    return typeMap[fileType?.toLowerCase()] || '📁';
   };
 
+  const displayDate = uploadDate ? new Date(uploadDate) : new Date();
+
   return (
-    <div className="document-card">
-      <Link to={`/document/${id}`} className="document-card-link">
-        <div className="document-card-header">
-          <div className="document-icon">
-            {getFileIcon(type)}
-          </div>
-          {thumbnail && (
-            <img 
-              src={thumbnail} 
-              alt={title}
-              className="document-thumbnail"
-            />
-          )}
+    <BaseCard
+      item={document}
+      type="document"
+      imageUrl={thumbnail || '/images/default-document.jpg'}
+      imageAlt={title}
+      title={title}
+      subtitle={`By ${author}`}
+      description={description}
+      price={price}
+      badge={<div className="file-type-badge">{getFileIcon(type)} {type?.toUpperCase()}</div>}
+      metaInfo={
+        <div className="document-meta">
+          <span>{pages || 'N/A'} pages</span>
+          <span className="meta-divider">•</span>
+          <span>{formatFileSize(fileSize)}</span>
         </div>
-        
-        <div className="document-card-body">
-          <h3 className="document-card-title">
-            {title}
-          </h3>
-          
-          <p className="document-card-description">
-            {description}
-          </p>
-          
-          <div className="document-card-meta">
-            <div className="document-card-author">
-              By {author}
-            </div>
-            <div className="document-card-info">
-              {pages} pages • {formatFileSize(fileSize)}
-            </div>
+      }
+      footerLeft={
+        <div className="document-stats">
+          {downloads.toLocaleString()} downloads
+        </div>
+      }
+      footerRight={
+        <div className="document-date">
+          {displayDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+        </div>
+      }
+      linkTo={`/document/${id}`}
+      hoverContent={
+        <div className="document-hover-info">
+          <div className="hover-detail-item">
+            <span className="hover-label">File Type:</span>
+            <span className="hover-value">{type?.toUpperCase()}</span>
           </div>
-          
-          <div className="document-card-footer">
-            <div className="document-card-stats">
-              <div className="document-downloads">
-                {downloads.toLocaleString()} downloads
-              </div>
-              <div className="document-date">
-                {new Date(uploadDate).toLocaleDateString()}
-              </div>
-            </div>
-            <div className="document-card-price">
-              {price === 0 ? 'Free' : `$${price}`}
-            </div>
+          <div className="hover-detail-item">
+            <span className="hover-label">Size:</span>
+            <span className="hover-value">{formatFileSize(fileSize)}</span>
+          </div>
+          <div className="hover-detail-item">
+            <span className="hover-label">Uploaded:</span>
+            <span className="hover-value">{displayDate.toLocaleDateString()}</span>
           </div>
         </div>
-      </Link>
-    </div>
+      }
+    />
   );
 };
 

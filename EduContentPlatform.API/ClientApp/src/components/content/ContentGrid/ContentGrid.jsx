@@ -6,6 +6,7 @@ import BookCard from '../ContentCard/BookCard';
 import { CONTENT_TYPES } from '../../../constants/contentTypes';
 
 const ContentGrid = ({ content = [], columns = 4 }) => {
+  debugger;
   if (!content || content.length === 0) {
     return (
       <div className="content-grid-empty">
@@ -29,6 +30,7 @@ const ContentGrid = ({ content = [], columns = 4 }) => {
   const columnClass = gridColumns[columns] || gridColumns[4];
 
   const renderContentItem = (item, index) => {
+    debugger;
     switch (item.type) {
       case CONTENT_TYPES.VIDEO:
         return <VideoCard key={item.id || index} video={item} />;

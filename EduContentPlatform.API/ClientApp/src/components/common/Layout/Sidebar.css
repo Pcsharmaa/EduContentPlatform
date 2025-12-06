@@ -76,14 +76,11 @@
 
 .nav-link:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: rgb(54, 93, 234);
-  border-left-color: #4361ee;
 }
 
 .nav-link.active {
   background: rgba(67, 97, 238, 0.1);
-  color: white;
-  border-left-color: #4361ee;
+  color: #4361ee;
 }
 
 .nav-link svg {

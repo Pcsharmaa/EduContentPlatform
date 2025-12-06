@@ -1,9 +1,9 @@
-
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, useAuth } from './context/AuthContext'
+import { AuthProvider } from './context/AuthContext'
 import { ContentProvider } from './context/ContentContext'
 import { UploadProvider } from './context/UploadContext'
+import RoleBasedDashboard from './components/common/RoleBasedDashboard'
 
 // Layouts
 import MainLayout from './components/common/Layout/MainLayout'
@@ -28,10 +28,8 @@ import TeacherCourses from './pages/Teacher/TeacherCourses'
 import CourseEdit from './pages/Teacher/CourseEdit'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import EditorialDashboard from './pages/Editorial/EditorialDashboard'
-import { de } from 'date-fns/locale'
 
 // --- Protected Route Logic ---
-// role synonyms mapping
 const roleSynonyms = {
   scholar: 'publisher',
   publisher: 'scholar',
@@ -39,38 +37,30 @@ const roleSynonyms = {
 
 const normalizeRole = (r) => (r ? String(r).toLowerCase() : '')
 
-// Use AuthContext to determine auth state & user
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
-  debugger;
-  // useAuth must be used inside AuthProvider; App wraps children with AuthProvider below
-  const { user, isAuthenticated } = useAuth() || {};
+  const rawUser = localStorage.getItem('user')
+  const user = rawUser ? JSON.parse(rawUser) : null
+  const token = localStorage.getItem('token')
 
-  // If not authenticated -> redirect to login
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
+  if (!token || !user) {
+    return <Navigate to="/login" />
   }
 
-  // If roles are specified, check them
   if (allowedRoles.length > 0) {
-    debugger;
-    const userRole = normalizeRole(user.displayName || (Array.isArray(user.displayName) ? user.roles[0] : undefined));
-    const normalizedAllowed = allowedRoles.map(normalizeRole);
+    const userRole = normalizeRole(user.displayName || user.roles?.[0])
+    const normalizedAllowed = allowedRoles.map(normalizeRole)
 
     const allowed = normalizedAllowed.some(ar => {
-      debugger;
-      if (ar === userRole) return true;
-      if (roleSynonyms[userRole] === ar) return true;
-      if (roleSynonyms[ar] === userRole) return true;
-      return false;
-    });
+      if (ar === userRole) return true
+      if (roleSynonyms[userRole] === ar) return true
+      if (roleSynonyms[ar] === userRole) return true
+      return false
+    })
 
-    if (!allowed) {
-      // user is authenticated but not authorized for this route
-      return <Navigate to="/" replace />;
-    }
+    if (!allowed) return <Navigate to="/" />
   }
 
-  return children;
+  return children
 }
 
 function App() {
@@ -100,7 +90,7 @@ function App() {
             <Route
               path="/upload"
               element={
-                <ProtectedRoute allowedRoles={['teacher', 'scholar', 'editor', 'reviewer', 'admin']}>
+                <ProtectedRoute allowedRoles={['Teacher', 'Scholar', 'Editor', 'Reviewer', 'Admin']}>
                   <MainLayout><UploadPage /></MainLayout>
                 </ProtectedRoute>
               }
@@ -109,7 +99,7 @@ function App() {
             <Route
               path="/teacher/upload"
               element={
-                <ProtectedRoute allowedRoles={['teacher']}>
+                <ProtectedRoute allowedRoles={['Teacher']}>
                   <MainLayout><TeacherUpload /></MainLayout>
                 </ProtectedRoute>
               }
@@ -118,7 +108,7 @@ function App() {
             <Route
               path="/teacher/courses"
               element={
-                <ProtectedRoute allowedRoles={['teacher']}>
+                <ProtectedRoute allowedRoles={['Teacher']}>
                   <MainLayout><TeacherCourses /></MainLayout>
                 </ProtectedRoute>
               }
@@ -127,7 +117,7 @@ function App() {
             <Route
               path="/teacher/courses/:id"
               element={
-                <ProtectedRoute allowedRoles={['teacher']}>
+                <ProtectedRoute allowedRoles={['Teacher']}>
                   <MainLayout><CourseEdit /></MainLayout>
                 </ProtectedRoute>
               }
@@ -136,18 +126,18 @@ function App() {
             <Route
               path="/scholar/upload"
               element={
-                <ProtectedRoute allowedRoles={['scholar']}>
+                <ProtectedRoute allowedRoles={['Scholar']}>
                   <MainLayout><ScholarUpload /></MainLayout>
                 </ProtectedRoute>
               }
             />
 
             {/* Dashboard Routes */}
-            <Route
+                    <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <DashboardLayout><DashboardPage /></DashboardLayout>
+                  <RoleBasedDashboard />
                 </ProtectedRoute>
               }
             />
@@ -155,7 +145,7 @@ function App() {
             <Route
               path="/dashboard/content"
               element={
-                <ProtectedRoute allowedRoles={['teacher', 'scholar', 'editor', 'reviewer', 'admin']}>
+                <ProtectedRoute allowedRoles={['Teacher', 'Scholar', 'Editor', 'Reviewer', 'Admin']}>
                   <DashboardLayout><MyContent /></DashboardLayout>
                 </ProtectedRoute>
               }
@@ -164,7 +154,7 @@ function App() {
             <Route
               path="/dashboard/publications"
               element={
-                <ProtectedRoute allowedRoles={['scholar', 'editor', 'reviewer', 'admin']}>
+                <ProtectedRoute allowedRoles={['Scholar', 'Editor', 'Reviewer', 'Admin']}>
                   <DashboardLayout><MyPublications /></DashboardLayout>
                 </ProtectedRoute>
               }
@@ -183,7 +173,7 @@ function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute allowedRoles={['admin']}>
+                <ProtectedRoute allowedRoles={['Admin']}>
                   <DashboardLayout><AdminDashboard /></DashboardLayout>
                 </ProtectedRoute>
               }
@@ -193,14 +183,14 @@ function App() {
             <Route
               path="/editorial"
               element={
-                <ProtectedRoute allowedRoles={['editor', 'reviewer']}>
+                <ProtectedRoute allowedRoles={['Editor', 'Reviewer']}>
                   <DashboardLayout><EditorialDashboard /></DashboardLayout>
                 </ProtectedRoute>
               }
             />
 
             {/* Catch All */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/" />} />
 
           </Routes>
         </UploadProvider>

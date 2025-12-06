@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import BaseCard from '../../content/ContentCard/BaseCard';
 
 const BookCard = ({ book }) => {
   const {
@@ -7,76 +7,68 @@ const BookCard = ({ book }) => {
     title,
     author,
     description,
-    isbn,
     pages,
     publisher,
     publishDate,
     price,
     coverImage,
-    rating,
-    reviews,
-    categories = [],
+    rating = 0,
+    reviews = 0,
   } = book;
 
+  const displayDate = publishDate ? new Date(publishDate) : new Date();
+  
+  // Calculate star rating
+  const fullStars = Math.floor(rating);
+  const emptyStars = 5 - fullStars;
+
   return (
-    <div className="book-card">
-      <Link to={`/book/${id}`} className="book-card-link">
-        <div className="book-card-cover">
-          <img 
-            src={coverImage || '/images/default-book-cover.jpg'} 
-            alt={title}
-            className="book-cover-image"
-          />
+    <BaseCard
+      item={book}
+      type="book"
+      imageUrl={coverImage || '/images/default-book-cover.jpg'}
+      imageAlt={title}
+      title={title}
+      subtitle={`By ${author}`}
+      description={description}
+      price={price}
+      metaInfo={
+        <div className="book-meta">
+          <span>{pages} pages</span>
+          <span className="meta-divider">•</span>
+          <span>{publisher}</span>
         </div>
-        
-        <div className="book-card-body">
-          <h3 className="book-card-title">
-            {title}
-          </h3>
-          
-          <div className="book-card-author">
-            By {author}
+      }
+      footerLeft={
+        <div className="book-rating">
+          <span className="stars">
+            {'★'.repeat(fullStars)}
+            {'☆'.repeat(emptyStars)}
+          </span>
+          <span className="review-count">({reviews})</span>
+        </div>
+      }
+      linkTo={`/book/${id}`}
+      hoverContent={
+        <div className="book-hover-details">
+          <div className="hover-detail-item">
+            <span className="hover-label">Published:</span>
+            <span className="hover-value">{displayDate.toLocaleDateString()}</span>
           </div>
-          
-          <div className="book-card-categories">
-            {categories.slice(0, 2).map((category, index) => (
-              <span key={index} className="book-category">
-                {category}
-              </span>
-            ))}
+          <div className="hover-detail-item">
+            <span className="hover-label">Pages:</span>
+            <span className="hover-value">{pages}</span>
           </div>
-          
-          <p className="book-card-description">
-            {description}
-          </p>
-          
-          <div className="book-card-meta">
-            <div className="book-card-pages">
-              {pages} pages
-            </div>
-            <div className="book-card-publisher">
-              {publisher}
-            </div>
+          <div className="hover-detail-item">
+            <span className="hover-label">Publisher:</span>
+            <span className="hover-value">{publisher}</span>
           </div>
-          
-          <div className="book-card-footer">
-            <div className="book-card-rating">
-              <div className="rating-stars">
-                {'★'.repeat(Math.floor(rating))}
-                {'☆'.repeat(5 - Math.floor(rating))}
-              </div>
-              <div className="rating-count">
-                ({reviews} reviews)
-              </div>
-            </div>
-            
-            <div className="book-card-price">
-              ${price}
-            </div>
+          <div className="hover-price-display">
+            ${typeof price === 'number' ? price.toFixed(2) : price}
           </div>
         </div>
-      </Link>
-    </div>
+      }
+    />
   );
 };
 

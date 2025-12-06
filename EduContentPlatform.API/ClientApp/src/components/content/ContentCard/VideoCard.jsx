@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import BaseCard from '../../content/ContentCard/BaseCard';
 
 const VideoCard = ({ video }) => {
   const {
@@ -9,68 +9,73 @@ const VideoCard = ({ video }) => {
     duration,
     thumbnail,
     author,
-    views,
+    views = 0,
     uploadDate,
     price,
   } = video;
 
-  const formatDuration = (seconds) => {
+  const formatDuration = (duration) => {
+    if (typeof duration === 'string') {
+      if (duration.includes(':')) return duration;
+      const num = parseInt(duration);
+      if (!isNaN(num)) {
+        const hours = Math.floor(num / 3600);
+        const minutes = Math.floor((num % 3600) / 60);
+        const seconds = num % 60;
+        
+        if (hours > 0) {
+          return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
+      return duration;
+    }
+    
+    const seconds = parseInt(duration) || 0;
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const displayDate = uploadDate ? new Date(uploadDate) : new Date();
+
   return (
-    <div className="video-card">
-      <Link to={`/video/${id}`} className="video-card-link">
-        <div className="video-card-thumbnail">
-          <img 
-            src={thumbnail || '/images/default-video-thumbnail.jpg'} 
-            alt={title}
-            className="thumbnail-image"
-          />
-          <div className="video-duration">
-            {formatDuration(duration)}
-          </div>
-          <div className="video-play-button">
-            ▶
+    <BaseCard
+      item={video}
+      type="video"
+      imageUrl={thumbnail || '/images/default-video-thumbnail.jpg'}
+      imageAlt={title}
+      title={title}
+      subtitle={`By ${author}`}
+      description={description}
+      price={price}
+      badge={<div className="duration-badge">{formatDuration(duration)}</div>}
+      footerLeft={
+        <div className="video-stats">
+          {views.toLocaleString()} views
+        </div>
+      }
+      footerRight={
+        <div className="video-date">
+          {displayDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+        </div>
+      }
+      linkTo={`/video/${id}`}
+      hoverContent={
+        <div className="video-hover-play">
+          <div className="play-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
           </div>
         </div>
-        
-        <div className="video-card-body">
-          <h3 className="video-card-title">
-            {title}
-          </h3>
-          
-          <p className="video-card-description">
-            {description}
-          </p>
-          
-          <div className="video-card-meta">
-            <div className="video-card-author">
-              By {author}
-            </div>
-            <div className="video-card-views">
-              {views.toLocaleString()} views
-            </div>
-          </div>
-          
-          <div className="video-card-footer">
-            <div className="video-card-date">
-              Uploaded {new Date(uploadDate).toLocaleDateString()}
-            </div>
-            <div className="video-card-price">
-              {price === 0 ? 'Free' : `$${price}`}
-            </div>
-          </div>
-        </div>
-      </Link>
-    </div>
+      }
+    />
   );
 };
 

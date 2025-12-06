@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import BaseCard from '../../content/ContentCard/BaseCard';
 import { CONTENT_TYPE_DISPLAY_NAMES } from '../../../constants/contentTypes';
 
 const ContentCard = ({ content }) => {
@@ -13,54 +13,64 @@ const ContentCard = ({ content }) => {
     price,
     rating,
     thumbnail,
-    students,
+    students = 0,
     createdAt,
   } = content;
 
+  const displayDate = createdAt ? new Date(createdAt) : new Date();
+
   return (
-    <div className="content-card">
-      <Link to={`/content/${id}`} className="content-card-link">
-        <div className="content-card-image">
-          <img 
-            src={thumbnail || '/images/default-thumbnail.jpg'} 
-            alt={title}
-            className="content-card-thumbnail"
-          />
-          <div className="content-card-type-badge">
-            {CONTENT_TYPE_DISPLAY_NAMES[type] || type}
+    <BaseCard
+      item={content}
+      type="content"
+      imageUrl={thumbnail || '/images/default-thumbnail.jpg'}
+      imageAlt={title}
+      title={title}
+      subtitle={`By ${author}`}
+      description={description}
+      price={price}
+      badge={
+        <div className="content-type-badge">
+          {CONTENT_TYPE_DISPLAY_NAMES[type] || type}
+        </div>
+      }
+      metaInfo={
+        <div className="content-meta">
+          <span className="content-category">{category}</span>
+        </div>
+      }
+      footerLeft={
+        <div className="content-rating">
+          <span className="stars">
+            {'★'.repeat(Math.floor(rating || 0))}
+            {'☆'.repeat(5 - Math.floor(rating || 0))}
+          </span>
+          <span className="student-count">({students} students)</span>
+        </div>
+      }
+      footerRight={
+        <div className="content-date">
+          {displayDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+        </div>
+      }
+      linkTo={`/content/${id}`}
+      hoverContent={
+        <div className="content-hover-info">
+          <div className="hover-detail-item">
+            <span className="hover-label">Category:</span>
+            <span className="hover-value">{category}</span>
+          </div>
+          <div className="hover-detail-item">
+            <span className="hover-label">Type:</span>
+            <span className="hover-value">{CONTENT_TYPE_DISPLAY_NAMES[type] || type}</span>
+          </div>
+          <div className="hover-detail-item">
+            <span className="hover-label">Created:</span>
+            <span className="hover-value">{displayDate.toLocaleDateString()}</span>
           </div>
         </div>
-        
-        <div className="content-card-body">
-          <div className="content-card-category">
-            {category}
-          </div>
-          
-          <h3 className="content-card-title">
-            {title}
-          </h3>
-          
-          <p className="content-card-description">
-            {description}
-          </p>
-          
-          <div className="content-card-author">
-            By {author}
-          </div>
-          
-          <div className="content-card-footer">
-            <div className="content-card-rating">
-              <span className="rating-stars">★★★★★</span>
-              <span className="rating-value">{rating}</span>
-            </div>
-            
-            <div className="content-card-price">
-              {price === 0 ? 'Free' : `$${price}`}
-            </div>
-          </div>
-        </div>
-      </Link>
-    </div>
+      }
+    />
   );
 };
 

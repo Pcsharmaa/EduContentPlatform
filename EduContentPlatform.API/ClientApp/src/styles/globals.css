@@ -161,7 +161,7 @@ code {
 }
 
 .stat-card {
-  background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent-1) 100%);
+  background: linear-gradient(135deg, #505452 0%, #c3e6da 100%);
   color: white;
   padding: 1rem;
   border-radius: 10px;
