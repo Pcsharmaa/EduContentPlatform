@@ -1,0 +1,12 @@
+/* Light theme overrides (explicitly set to the default tokens) */
+:root, [data-theme="light"] {
+	--bg: #f7f8fb;
+	--surface: #ffffff;
+	--text: #0f1724;
+	--muted: #6b7280;
+	--primary-500: #3b82f6;
+	--primary-600: #2563eb;
+	--accent: #7c3aed;
+	--card-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+	--soft-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
