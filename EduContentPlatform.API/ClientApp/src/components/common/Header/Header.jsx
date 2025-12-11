@@ -34,6 +34,17 @@ const Header = () => {
           <Link to="/" className="nav-link">
             Browse
           </Link>
+          <Link to="/about" className="nav-link">
+            About
+          </Link>
+          <Link to="/contact" className="nav-link">
+            Contact
+          </Link>
+          <Link to="/resources" className="nav-link">
+            Resources
+          </Link>
+
+
           {/* {isAuthenticated && (
             <>
               <Link to="/dashboard" className="nav-link">
@@ -61,9 +72,9 @@ const Header = () => {
             <div className="header-user">
               <div className="user-menu-trigger" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
                 <div className="user-avatar">
-                  {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                  {user?.userType?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                <span className="user-name">{user?.firstName}</span>
+                <span className="user-name">{user?.displayName}</span>
                 <span className={`dropdown-icon ${isUserMenuOpen ? 'open' : ''}`}>▼</span>
               </div>
 

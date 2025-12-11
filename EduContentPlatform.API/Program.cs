@@ -1,8 +1,9 @@
 ﻿using EduContentPlatform.API.Authorization;
+using EduContentPlatform.Repositorie.Content;
 using EduContentPlatform.Repository.Auth;
-using EduContentPlatform.Repository.Content;
 using EduContentPlatform.Repository.Database;
 using EduContentPlatform.Services.Auth;
+using EduContentPlatform.Services.Content;
 using EduContentPlatform.Services.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -33,14 +34,12 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // User Type
-builder.Services.AddScoped<IUserTypeRepository, UserTypeRepository>();
+//builder.Services.AddScoped<IUserTypeRepository, UserTypeRepository>();
 
 // Content Services
-builder.Services.AddScoped<IPublicationRepository, PublicationRepository>();
-builder.Services.AddScoped<IPublicationService, PublicationService>();
+builder.Services.AddScoped<IContentRepository, ContentRepository>();
 
-builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
-builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IContentService, ContentService>();
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

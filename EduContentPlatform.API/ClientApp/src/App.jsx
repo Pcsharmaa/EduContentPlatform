@@ -8,7 +8,6 @@ import RoleBasedDashboard from './components/common/RoleBasedDashboard'
 // Layouts
 import MainLayout from './components/common/Layout/MainLayout'
 import DashboardLayout from './components/common/Layout/DashboardLayout'
-
 // Pages
 import HomePage from './pages/Home/HomePage'
 import LoginPage from './pages/Auth/LoginPage'
@@ -76,7 +75,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/browse" element={<BrowsePage />} />
-
+           
             <Route
               path="/content/:id"
               element={<MainLayout><ContentViewer /></MainLayout>}

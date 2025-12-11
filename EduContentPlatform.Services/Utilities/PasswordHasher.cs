@@ -1,41 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EduContentPlatform.Services.Utilities
 {
     public class PasswordHasher : IPasswordHasher
     {
-        public string GenerateSalt()
-        {
-            var saltBytes = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(saltBytes);
-            }
-            return Convert.ToBase64String(saltBytes);
-        }
+        private const int SaltSize = 128 / 8; // 128 bits
+        private const int HashSize = 256 / 8; // 256 bits
+        private const int Iterations = 10000;
 
         public string HashPassword(string password, string salt)
         {
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentNullException(nameof(password));
+
+            if (string.IsNullOrEmpty(salt))
+                throw new ArgumentNullException(nameof(salt));
+
             var saltBytes = Convert.FromBase64String(salt);
-            using (var deriveBytes = new Rfc2898DeriveBytes(password, saltBytes, 10000, HashAlgorithmName.SHA256))
+
+            var hashBytes = KeyDerivation.Pbkdf2(
+                password: password,
+                salt: saltBytes,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: Iterations,
+                numBytesRequested: HashSize);
+
+            return Convert.ToBase64String(hashBytes);
+        }
+
+        public bool VerifyPassword(string password, string hash, string salt)
+        {
+            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash) || string.IsNullOrEmpty(salt))
+                return false;
+
+            try
             {
-                var hashBytes = deriveBytes.GetBytes(32);
-                return Convert.ToBase64String(hashBytes);
+                var computedHash = HashPassword(password, salt);
+                return SlowEquals(Convert.FromBase64String(hash), Convert.FromBase64String(computedHash));
+            }
+            catch
+            {
+                return false;
             }
         }
 
-        public bool VerifyPassword(string password, string passwordHash, string salt)
+        public string GenerateSalt()
         {
-            if (string.IsNullOrEmpty(passwordHash) || string.IsNullOrEmpty(salt))
-                return false;
+            var salt = new byte[SaltSize];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(salt);
+            }
+            return Convert.ToBase64String(salt);
+        }
 
-            var computedHash = HashPassword(password, salt);
-            return computedHash == passwordHash;
+        public (string Hash, string Salt) CreateHash(string password)
+        {
+            var salt = GenerateSalt();
+            var hash = HashPassword(password, salt);
+            return (hash, salt);
+        }
+
+        private bool SlowEquals(byte[] a, byte[] b)
+        {
+            var diff = (uint)a.Length ^ (uint)b.Length;
+            for (var i = 0; i < a.Length && i < b.Length; i++)
+            {
+                diff |= (uint)(a[i] ^ b[i]);
+            }
+            return diff == 0;
         }
     }
 }

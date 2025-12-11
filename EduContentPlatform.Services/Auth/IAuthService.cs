@@ -1,8 +1,4 @@
 ﻿using EduContentPlatform.Models.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EduContentPlatform.Services.Auth
@@ -11,8 +7,13 @@ namespace EduContentPlatform.Services.Auth
     {
         Task<AuthResponse> RegisterAsync(RegisterRequest request);
         Task<AuthResponse> LoginAsync(LoginRequest request);
-        Task<bool> ResetPasswordAsync(string token, string newPassword);
+        Task<AuthResponse> SocialLoginAsync(SocialLoginRequest request);
         Task<bool> ForgotPasswordAsync(string email);
-        Task<UserModel> GetUserProfileAsync(int userId);
+        Task<bool> ResetPasswordAsync(string token, string newPassword);
+        Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
+        Task<UserWithRolesModel> GetUserProfileAsync(int userId);
+        Task<UserWithRolesModel> UpdateUserProfileAsync(int userId, UpdateProfileRequest request);
+        Task<List<SocialLoginModel>> GetUserSocialLoginsAsync(int userId);
+        Task<bool> RemoveSocialLoginAsync(int userId, string provider);
     }
 }
